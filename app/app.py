@@ -31,8 +31,12 @@ def home():
                "Type": instance["InstanceType"],
                "Public IP": instance.get("PublicIpAddress", "N/A")
            })
-  
-   # Fetch VPCs
+
+   # Fetch VPCs, Load Balancers and AMIs
+   vpcs = ec2_client.describe_vpcs()
+   lbs = elb_client.describe_load_balancers()
+   amis = ec2_client.describe_images(Owners=["self"])
+
    vpc_data = [{"VPC ID": vpc["VpcId"], "CIDR": vpc["CidrBlock"]} for vpc in vpcs["Vpcs"]]
   
    # Fetch Load Balancers
