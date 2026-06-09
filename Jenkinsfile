@@ -18,25 +18,15 @@ pipeline {
 
                 stage('Linting') {
                     steps {
-                        sh '''
-                            docker run --rm \
-                              -v "$PWD":/workspace \
-                              -w /workspace \
-                              python:3.11-slim \
-                              sh -c "pip install flake8 && flake8 app/"
-                        '''
+                        sh 'python3 -m pip install --break-system-packages flake8'
+                        sh 'python3 -m flake8 app/'
                     }
                 }
 
                 stage('Security Scan') {
                     steps {
-                        sh '''
-                            docker run --rm \
-                              -v "$PWD":/workspace \
-                              -w /workspace \
-                              python:3.11-slim \
-                              sh -c "pip install bandit && bandit -r app/"
-                        '''
+                        sh 'python3 -m pip install --break-system-packages bandit'
+                        sh 'python3 -m bandit -r app/'
                     }
                 }
             }
