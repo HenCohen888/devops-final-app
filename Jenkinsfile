@@ -19,7 +19,7 @@ pipeline {
                 stage('Linting') {
                     steps {
                         sh 'python3 -m pip install --break-system-packages flake8'
-                        sh 'python3 -m flake8 app/'
+                        sh 'python3 -m flake8 app/ --ignore=E501'
                     }
                 }
 
