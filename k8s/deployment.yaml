@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: flask-aws-monitor
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: flask-aws-monitor
+
+  template:
+    metadata:
+      labels:
+        app: flask-aws-monitor
+
+    spec:
+      containers:
+        - name: flask-aws-monitor
+          image: hencohen888/flask-aws-monitor:latest
+
+          ports:
+            - containerPort: 5001
+
+          volumeMounts:
+            - name: aws-credentials
+              mountPath: /root/.aws
+              readOnly: true
+
+      volumes:
+        - name: aws-credentials
+          secret:
+            secretName: aws-credentials
