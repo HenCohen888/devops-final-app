@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USERNAME = 'hencohen888'
         IMAGE_NAME = 'hencohen888/flask-aws-monitor'
     }
 
@@ -19,16 +18,25 @@ pipeline {
 
                 stage('Linting') {
                     steps {
-                        sh 'python3 -m pip install --upgrade pip'
-                        sh 'pip install flake8'
-                        sh 'flake8 app/'
+                        sh '''
+                            docker run --rm \
+                              -v "$PWD":/workspace \
+                              -w /workspace \
+                              python:3.11-slim \
+                              sh -c "pip install flake8 && flake8 app/"
+                        '''
                     }
                 }
 
                 stage('Security Scan') {
                     steps {
-                        sh 'pip install bandit'
-                        sh 'bandit -r app/'
+                        sh '''
+                            docker run --rm \
+                              -v "$PWD":/workspace \
+                              -w /workspace \
+                              python:3.11-slim \
+                              sh -c "pip install bandit && bandit -r app/"
+                        '''
                     }
                 }
             }
