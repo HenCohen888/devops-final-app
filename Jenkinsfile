@@ -51,6 +51,34 @@ pipeline {
                 }
             }
         }
+
+        stage('Update GitOps Repo') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'github-credentials',
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN'
+                )]) {
+                    sh '''
+                        rm -rf devops-final-gitops
+
+                        git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/HenCohen888/devops-final-gitops.git
+
+                        cd devops-final-gitops
+
+                        sed -i "s/tag: .*/tag: \\"${BUILD_NUMBER}\\"/" flask-aws-monitor/dev/values.yaml
+
+                        git config user.email "jenkins@local"
+                        git config user.name "jenkins"
+
+                        git add flask-aws-monitor/dev/values.yaml
+                        git commit -m "Update dev image tag to ${BUILD_NUMBER}" || echo "No changes to commit"
+
+                        git push origin main
+                    '''
+                }
+            }
+        }
     }
 
     post {
